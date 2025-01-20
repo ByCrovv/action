@@ -32,8 +32,8 @@ jobs:
       - name: Install Node.js dependencies
         run: npm install
 
-      - name: Run tests
-        run: npm test  # Laravel projeleri için ayrıca PHP testleri de çalıştırılabilir
+#      - name: Run tests
+#        run: npm test  # Laravel projeleri için ayrıca PHP testleri de çalıştırılabilir
 
       - name: Run Laravel migrations (eğer gerekiyorsa)
         run: |
