@@ -1,0 +1,46 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - master
+    # Master branch'ine yapılan push işlemi (merge sonrası tetiklenir)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'  # PHP 8.2 sürümünü kullanıyoruz
+
+      - name: Install Composer dependencies
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          php composer.phar install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # İhtiyaca göre Node.js versiyonunu belirleyin
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test  # Laravel projeleri için ayrıca PHP testleri de çalıştırılabilir
+
+      - name: Clear Laravel cache (opsiyonel)
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:clear
+
+      - name: Deploy to server
+        run: |
+          # Deploy işlemi burada yapılacak (örneğin SSH ile uzak sunucuya yükleme vb.)
+          echo "Deploy işlemi burada yapılacak."
