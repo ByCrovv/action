@@ -1,0 +1,46 @@
+name: Test on Dev Branch
+
+on:
+  push:
+    branches:
+      - dev
+    # Dev branch'ine yapılan push işlemleri tetiklenir
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'  # PHP 8.2 sürümünü kullanıyoruz
+
+      - name: Install Composer dependencies
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          php composer.phar install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'  # İhtiyaca göre Node.js versiyonunu belirleyin
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+#      - name: Run tests
+#        run: npm test  # Laravel projeleri için ayrıca PHP testleri de çalıştırılabilir
+
+      - name: Run Laravel migrations (eğer gerekiyorsa)
+        run: |
+          php artisan migrate --force  # `--force` prod ortamında çalıştırmak için gerekli
+
+      - name: Clear Laravel cache (opsiyonel)
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:clear
